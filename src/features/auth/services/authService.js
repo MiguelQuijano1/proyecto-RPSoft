@@ -7,8 +7,8 @@ const api = axios.create({
   baseURL: BASE_URL,
   headers: {
     'Content-Type': 'application/json',
-  },
-  withCredentials: true
+  }
+  // QUITAMOS withCredentials: true
 });
 
 // Interceptor para agregar token en cada petición
@@ -29,16 +29,22 @@ export const authService = {
   login: async (credentials) => {
     const response = await api.post('/login', credentials);
     if (response.data.token) {
+      // Guardar token en cookie
       Cookies.set('auth_token', response.data.token, { 
         expires: 1,
-        sameSite: 'strict'
+        sameSite: 'strict',
+        secure: false  // En localhost no usamos HTTPS
       });
     }
     return response.data;
   },
 
   logout: async () => {
-    await api.delete('/logout');
+    try {
+      await api.delete('/logout');
+    } catch (error) {
+      console.error('Error al cerrar sesión:', error);
+    }
     Cookies.remove('auth_token');
   },
 
