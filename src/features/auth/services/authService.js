@@ -1,3 +1,4 @@
+// src/features/auth/services/authService.js
 import axios from 'axios';
 import Cookies from 'js-cookie';
 
@@ -7,8 +8,7 @@ const api = axios.create({
   baseURL: BASE_URL,
   headers: {
     'Content-Type': 'application/json',
-  },
-  withCredentials: true
+  }
 });
 
 // Interceptor para agregar token en cada petición
@@ -29,17 +29,27 @@ export const authService = {
   login: async (credentials) => {
     const response = await api.post('/login', credentials);
     if (response.data.token) {
+      // Guardar token en cookie
       Cookies.set('auth_token', response.data.token, { 
-        expires: 1,
-        sameSite: 'strict'
+        expires: 7, // 7 días
+        sameSite: 'strict',
+        secure: false  // En localhost no usamos HTTPS
       });
     }
     return response.data;
   },
 
   logout: async () => {
-    await api.delete('/logout');
-    Cookies.remove('auth_token');
+    try {
+      // Intentar hacer logout en el backend
+      await api.delete('/logout');
+    } catch (error) {
+      // Si falla (401, 403, etc.), no importa, igual limpiamos local
+      console.log('Logout del servidor falló, limpiando sesión local');
+    } finally {
+      // SIEMPRE eliminar el token local
+      Cookies.remove('auth_token');
+    }
   },
 
   getProfile: async () => {
