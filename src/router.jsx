@@ -5,6 +5,7 @@ import { Register } from './features/auth/pages/Register';
 import { Profile } from './features/profile/pages/Profile';
 import Posts from './features/blog/pages/Posts';
 import PostDetail from './features/blog/pages/PostDetail';
+import Contact from './features/contact/pages/Contact';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import Layout from './components/Layout';
 
@@ -29,6 +30,7 @@ export const AppRouter = () => {
           <Route path="profile" element={<Profile />} />
           <Route path="blog" element={<Posts />} />
           <Route path="blog/:id" element={<PostDetail />} />
+          <Route path="contact" element={<Contact />} />
         </Route>
 
         {/* Ruta catch-all */}
